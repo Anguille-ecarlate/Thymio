@@ -1,0 +1,92 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--node Lego-->
+<node nodeId="{1c549d35-f27e-44f3-9f6e-b4c25dd2a6dd}" name="Lego"><![CDATA[
+var On_off = 0
+var Vit = 500
+
+sub Go 
+    motor.left.target = Vit
+    motor.right.target = Vit
+
+sub Stop
+    motor.left.target = 0
+    motor.right.target = 0
+
+sub Gauche
+    motor.left.target = -Vit
+    motor.right.target = Vit
+
+sub Droite
+    motor.left.target = Vit
+    motor.right.target = -Vit
+
+onevent button.center
+    On_off = 0
+    callsub Stop
+
+onevent button.forward
+    On_off = 1
+    callsub Go
+
+onevent prox
+    if On_off == 1 then
+        if prox.ground.delta[0] > 650 or prox.ground.delta[1] > 650 then
+            call leds.top(32, 32, 0)
+            if not prox.ground.delta[0] > 650 then
+                callsub Droite
+            else
+                if not prox.ground.delta[1] > 650 then
+                    callsub Gauche
+                else
+                    if prox.horizontal[2] > 3000 then
+                        callsub Stop
+                        On_off = 0
+                    else
+                        callsub Go
+                        end
+                    end
+                end
+        else
+            call leds.top(0, 0, 0)
+            if prox.horizontal[2] > 3000 then
+                if prox.horizontal[0] > 2000 and prox.horizontal[4] > 2000 then
+                    while prox.horizontal[2] > 3000 do
+                        callsub Droite
+                        end
+                    callsub Go
+                else
+                    if prox.horizontal[0] > 3000 then
+                        while prox.horizontal[2] > 2000 do
+                            callsub Droite
+                            end
+                        callsub Go
+                    else
+                        while prox.horizontal[2] > 2000 do
+                            callsub Gauche
+                            end
+                        callsub Go
+                        end
+                    end
+            else
+                if prox.horizontal[0] > 3000 then
+                    callsub Droite
+                else
+                    if prox.horizontal[4] > 3000 then
+                        callsub Gauche
+                    else
+                        callsub Go
+                        end
+                    end
+                end
+            end
+        end
+]]></node>
+
+
+</network>
