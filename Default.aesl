@@ -1,0 +1,122 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--node Lego de la muerte-->
+<node nodeId="{1c549d35-f27e-44f3-9f6e-b4c25dd2a6dd}" name="Lego de la muerte"><![CDATA[# Var
+
+var on = 0
+var etat = 0
+var tm0 = 0
+var tm1 = 0
+
+var Vit = 500
+
+# fonc
+
+sub reset
+    timer.period[0] = 0
+    timer.period[1] = 0
+
+    etat = 0
+    tm0 = 0
+    tm1 = 0
+
+    etat = 0
+
+sub stop
+    on = 0
+    motor.left.target = 0
+    motor.right.target = 0
+
+sub go
+    if on == 0 then
+        return
+        end
+    motor.left.target = Vit
+    motor.right.target = Vit
+
+sub p_gauche
+    if on == 0 then
+        return
+        end
+    motor.left.target = -Vit
+    motor.right.target = Vit
+
+sub p_droite
+    if on == 0 then
+        return
+        end
+    motor.left.target = Vit
+    motor.right.target = -Vit
+
+sub gauche
+    if on == 0 then
+        return
+        end
+    motor.left.target = 0
+    motor.right.target = Vit
+
+sub droite
+    if on == 0 then
+        return
+        end
+    motor.left.target = Vit
+    motor.right.target = 0
+
+sub d_gauche
+    if on == 0 then
+        return
+        end
+    motor.left.target = Vit/2
+    motor.right.target = Vit
+
+sub d_droite
+    if on == 0 then
+        return
+        end
+    motor.left.target = Vit
+    motor.right.target = Vit/2
+
+sub ari
+    if on == 0 then
+        return
+        end
+    motor.left.target = -Vit
+    motor.right.target = -Vit
+
+# Bout
+
+onevent buttons
+
+    when button.center == 1 do
+        callsub reset
+        callsub stop
+        end
+
+    when button.forward == 1
+        callsub reset
+        callsub go
+        on = 1
+        end
+
+# Even
+
+onevent prox
+    when prox.ground.delta[0] > 650 do
+        end
+
+    when prox.horizontal[2] > 2000 do
+        end
+
+onevent timer0
+
+onevent timer1
+
+]]></node>
+
+
+</network>

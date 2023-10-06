@@ -1,0 +1,181 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+
+
+<!--node Lego de la muerte-->
+<node nodeId="{1c549d35-f27e-44f3-9f6e-b4c25dd2a6dd}" name="Lego de la muerte"><![CDATA[# Var
+
+var on = 0
+var etat = 0
+var tm0 = 0
+var eta = 0
+
+var Vit = 300
+
+# fonc
+
+sub reset
+    timer.period[0] = 0
+    timer.period[1] = 0
+
+    etat = 0
+    eta = 0
+    tm0 = 0
+
+sub stop
+    on = 0
+    motor.left.target = 0
+    motor.right.target = 0
+
+sub go
+    motor.left.target = Vit
+    motor.right.target = Vit
+
+sub p_gauche
+    motor.left.target = -Vit
+    motor.right.target = Vit
+
+sub p_droite
+    motor.left.target = Vit
+    motor.right.target = -Vit
+
+sub gauche
+    motor.left.target = 0
+    motor.right.target = Vit
+
+sub droite
+    motor.left.target = Vit
+    motor.right.target = 0
+
+sub d_gauche
+    motor.left.target = Vit/2
+    motor.right.target = Vit
+
+sub d_droite
+    motor.left.target = Vit
+    motor.right.target = Vit/2
+
+sub ari
+    motor.left.target = -Vit
+    motor.right.target = -Vit
+
+sub ledetat
+    if etat == 0 then
+        call leds.top(0, 0, 0)
+        end
+
+    if etat == 1 then
+        call leds.top(32, 32, 0)
+        end
+
+    if etat == 2 then
+        call leds.top(0, 32, 32)
+        end
+    
+    if etat > 2 then
+        call leds.top(32, 0, 0)
+        end
+
+# Bout
+
+onevent buttons
+
+    when button.center == 1 do
+        callsub reset
+        callsub stop
+        end
+
+    when button.forward == 1 do
+        callsub reset
+        callsub go
+        on = 1
+        end
+
+# Even
+
+onevent prox
+    callsub ledetat
+
+    when prox.ground.delta[0] > 650 and on == 1 do
+        if prox.horizontal[2] > 3000 then
+            callsub stop
+            callsub reset
+        else
+            etat += 1
+            timer.period[1] = 4500
+            end
+        end
+
+    if prox.horizontal[2] > 2000 and prox.ground.delta[0] > 650 then
+        callsub stop
+        callsub reset
+        end
+
+    if on == 1 and prox.ground.delta[0] < 650 and eta == 0 then
+        if prox.horizontal[2] > 2000 then
+            if prox.horizontal[0] > prox.horizontal[4] then
+                while prox.horizontal[2] > 2000 do
+                    callsub p_droite 
+                    end
+                callsub go
+            else
+                while prox.horizontal[2] > 2000 do
+                    callsub p_gauche
+                    end
+                callsub go
+                end
+        else
+            if prox.horizontal[0] < 1000 and etat == 1 then
+                tm0 = 1
+                timer.period[0] = 1300
+            else
+                if prox.horizontal[4] < 1000 and etat == 2 then
+                    tm0 = 2
+                    timer.period[0] = 500
+                else
+                    if prox.horizontal[0] > 3500 and prox.horizontal[4] < 2000 then
+                        callsub p_droite
+                    else
+                        if prox.horizontal[4] > 3500 and prox.horizontal[0] < 2000 then
+                            callsub p_gauche
+                        else
+                            callsub go
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+onevent timer0
+    timer.period[0] = 0
+    
+    if tm0 == 0 then
+        eta = 0
+        callsub go
+    else
+        if tm0 == 1 then
+        	eta = 1
+        	callsub p_gauche
+            tm0 = 0
+            timer.period[0] = 500
+        else
+        	if  tm0 == 2 then
+        		eta = 1
+        		callsub d_droite
+        		tm0 = 0
+        		timer.period[0] = 500
+        		end
+        	end
+        end
+
+onevent timer1
+    callsub reset
+
+]]></node>
+
+
+</network>
