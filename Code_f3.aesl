@@ -15,6 +15,8 @@ var eta = 0
 
 var Vit = 300
 
+call leds.top(32, 0, 0)
+
 # fonc
 
 sub reset
@@ -62,23 +64,6 @@ sub ari
     motor.left.target = -Vit
     motor.right.target = -Vit
 
-sub ledetat
-    if etat == 0 then
-        call leds.top(0, 0, 0)
-        end
-
-    if etat == 1 then
-        call leds.top(32, 32, 0)
-        end
-
-    if etat == 2 then
-        call leds.top(0, 32, 32)
-        end
-    
-    if etat > 2 then
-        call leds.top(32, 0, 0)
-        end
-
 # Bout
 
 onevent buttons
@@ -97,7 +82,6 @@ onevent buttons
 # Even
 
 onevent prox
-    callsub ledetat
 
     when prox.ground.delta[0] > 650 and on == 1 do
         if prox.horizontal[2] > 3000 then
@@ -109,7 +93,7 @@ onevent prox
             end
         end
 
-    if prox.horizontal[2] > 2000 and prox.ground.delta[0] > 650 then
+    if prox.horizontal[2] > 3000 and prox.ground.delta[0] > 650 then
         callsub stop
         callsub reset
         end
